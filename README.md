@@ -2,7 +2,7 @@
 
 **The ultimate privacy-focused WhatsApp Chat Analyzer.** Decode your chat history with forensic depth, interactive visualizations, and zero data collecting.
 
-<!-- ![Chatalytics Pro Banner](https://via.placeholder.com/1200x600?text=Chatalytics+Pro+Dashboard)  -->
+![Chatalytics Pro Banner](https://github.com/user-attachments/assets/9f1d22e7-72af-4695-a787-a88fc3ab3beb)
 
 ## 🚀 Features
 
