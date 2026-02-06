@@ -4,7 +4,9 @@ import {
   Upload, Moon, Sun, MessageCircle, Image as ImageIcon, 
   Zap, Clock, Trash2, Edit2, Link as LinkIcon, Smile, 
   Activity, Crown, TrendingUp, Search, BookOpen, Coffee, 
-  BarChart2, Award, Calendar, ChevronRight
+  BarChart2, Award, Calendar, ChevronRight,
+  // NEW ICONS ADDED HERE:
+  FileText, Smartphone, MoreVertical, Shield
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -308,16 +310,57 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {!chatData ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 animate-fade-in">
-             <div className="text-center space-y-4 max-w-2xl">
-                <h1 className="text-5xl md:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500 pb-2">Decode Your Chat</h1>
-                <p className="text-gray-500 dark:text-gray-400 text-lg">Instant, private WhatsApp analysis.</p>
+          <div className="flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">
+             
+             {/* HERO TITLE */}
+             <div className="text-center space-y-4 max-w-2xl mb-12">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold uppercase tracking-wider mb-2">
+                    <Shield size={12} /> Private & Secure
+                </div>
+                <h1 className="text-5xl md:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-cyan-500 pb-2">
+                    Decode Your Chat
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">
+                    Visualize your WhatsApp history without data leaving your device.
+                </p>
              </div>
-             <label className="group relative w-full max-w-lg h-52 border-4 border-dashed border-gray-300 dark:border-gray-700 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all bg-white dark:bg-gray-900">
-                <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400 mb-3 group-hover:scale-110 transition-transform"><Upload size={28}/></div>
-                <span className="font-bold text-gray-700 dark:text-gray-200">Upload .zip or .txt</span>
+
+             {/* HOW IT WORKS STEPS */}
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mb-12">
+                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 transition-colors">
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Smartphone size={24} />
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">1. Open WhatsApp</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Open any chat (individual or group) and tap the contact name or three dots.</p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 transition-colors">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <MoreVertical size={24} />
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">2. Export Chat</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Tap <b>More &gt; Export Chat &gt; Without Media</b>. Save the .zip or .txt file.</p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 transition-colors">
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <FileText size={24} />
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">3. Upload Here</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Drop the exported file into the box below to start analyzing.</p>
+                </div>
+             </div>
+
+             {/* UPLOAD BOX */}
+             <label className="group relative w-full max-w-lg h-40 border-4 border-dashed border-gray-300 dark:border-gray-700 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all bg-white dark:bg-gray-900/50">
+                <div className="flex flex-col items-center gap-3 group-hover:scale-105 transition-transform">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300"><Upload size={24}/></div>
+                    <span className="font-bold text-gray-700 dark:text-gray-200">Drop .txt or .zip file here</span>
+                </div>
                 <input type="file" accept=".txt,.zip" onChange={handleFileUpload} className="hidden" />
              </label>
+
           </div>
         ) : (
           <div className="space-y-8 animate-fade-in pb-20">
