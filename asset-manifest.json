@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Arora-Sir.github.io/chatalytics-pro/static/css/main.5e921e3e.css",
-    "main.js": "/Arora-Sir.github.io/chatalytics-pro/static/js/main.7d71a08c.js",
-    "static/js/453.969eb457.chunk.js": "/Arora-Sir.github.io/chatalytics-pro/static/js/453.969eb457.chunk.js",
-    "index.html": "/Arora-Sir.github.io/chatalytics-pro/index.html",
-    "main.5e921e3e.css.map": "/Arora-Sir.github.io/chatalytics-pro/static/css/main.5e921e3e.css.map",
-    "main.7d71a08c.js.map": "/Arora-Sir.github.io/chatalytics-pro/static/js/main.7d71a08c.js.map",
-    "453.969eb457.chunk.js.map": "/Arora-Sir.github.io/chatalytics-pro/static/js/453.969eb457.chunk.js.map"
+    "main.css": "/chatalytics-pro/static/css/main.5e921e3e.css",
+    "main.js": "/chatalytics-pro/static/js/main.429a3c4f.js",
+    "static/js/453.969eb457.chunk.js": "/chatalytics-pro/static/js/453.969eb457.chunk.js",
+    "index.html": "/chatalytics-pro/index.html",
+    "main.5e921e3e.css.map": "/chatalytics-pro/static/css/main.5e921e3e.css.map",
+    "main.429a3c4f.js.map": "/chatalytics-pro/static/js/main.429a3c4f.js.map",
+    "453.969eb457.chunk.js.map": "/chatalytics-pro/static/js/453.969eb457.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5e921e3e.css",
-    "static/js/main.7d71a08c.js"
+    "static/js/main.429a3c4f.js"
   ]
 }
