@@ -5,7 +5,6 @@ import {
   Zap, Clock, Trash2, Edit2, Link as LinkIcon, Smile, 
   Activity, Crown, TrendingUp, Search, BookOpen, Coffee, 
   BarChart2, Award, Calendar, ChevronRight,
-  // NEW ICONS ADDED HERE:
   FileText, Smartphone, MoreVertical, Shield
 } from 'lucide-react';
 import { 
@@ -36,6 +35,26 @@ const scrollStyles = `
 
 // --- HELPER COMPONENTS ---
 
+// 0. Number Count Up Animation (New helper for smooth stats)
+const CountUp = ({ end, duration = 1500, suffix = "" }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return <>{count.toLocaleString()}{suffix}</>;
+};
+
 // 1. Improved Custom Tooltip (Fixes Date Visibility)
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -43,7 +62,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     const dateLabel = new Date(label).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     
     return (
-      <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700 p-4 rounded-xl shadow-2xl text-white text-xs z-50 min-w-[150px]">
+      <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700 p-4 rounded-xl shadow-2xl text-white text-xs z-50 min-w-[150px] animate-pop">
         <p className="font-bold text-sm mb-3 text-gray-100 border-b border-gray-700 pb-2">
           {dateLabel === 'Invalid Date' ? label : dateLabel}
         </p>
@@ -93,10 +112,10 @@ const InfiniteWidget = ({ awards, stats }) => {
   const allItems = [...awards, ...extraCards, ...awards, ...extraCards];
 
   return (
-    <div className="w-full overflow-hidden py-4 relative group">
+    <div className="w-full overflow-hidden py-4 relative group animate-enter delay-100">
       <div className="flex w-max animate-scroll gap-6">
         {allItems.map((item, i) => (
-            <div key={i} className={`relative overflow-hidden rounded-2xl p-5 w-[260px] h-[140px] shadow-lg bg-gradient-to-br ${item.color} text-white flex-shrink-0 border border-white/10`}>
+            <div key={i} className={`relative overflow-hidden rounded-2xl p-5 w-[260px] h-[140px] shadow-lg bg-gradient-to-br ${item.color} text-white flex-shrink-0 border border-white/10 hover:scale-105 transition-transform duration-300`}>
               <div className="absolute top-0 right-0 p-3">
                 {item.icon || <Award size={50} className="text-white/20" />}
               </div>
@@ -113,8 +132,8 @@ const InfiniteWidget = ({ awards, stats }) => {
         ))}
       </div>
       {/* Fade Edges */}
-      <div className="absolute top-0 left-0 h-full w-20 bg-gradient-to-r from-[#f8fafc] dark:from-[#0f172a] to-transparent z-10 pointer-events-none"></div>
-      <div className="absolute top-0 right-0 h-full w-20 bg-gradient-to-l from-[#f8fafc] dark:from-[#0f172a] to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 h-full w-20 bg-gradient-to-r from-[#f8fafc] dark:from-[#020617] to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 h-full w-20 bg-gradient-to-l from-[#f8fafc] dark:from-[#020617] to-transparent z-10 pointer-events-none"></div>
     </div>
   );
 };
@@ -136,8 +155,8 @@ const HeatmapGrid = ({ data }) => {
                 if (d.level === 4) color = 'bg-green-600 dark:bg-green-400';
 
                 return (
-                    <div key={i} className={`w-3 h-3 rounded-[2px] ${color} relative group`}>
-                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50 pointer-events-none shadow-xl border border-gray-700">
+                    <div key={i} className={`w-3 h-3 rounded-[2px] ${color} relative group hover:scale-125 transition-transform z-0 hover:z-10`}>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50 pointer-events-none shadow-xl border border-gray-700 animate-pop">
                             <span className="font-bold text-gray-300">{d.date}:</span> {d.count} msgs
                         </div>
                     </div>
@@ -152,9 +171,12 @@ const HeatmapGrid = ({ data }) => {
 // 4. "Visible Details" Card (Replaces Hover Clouds)
 const VisibleDetailCard = ({ items, title, type }) => {
     return (
-        <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 dark:border-gray-700 h-full">
-            <h3 className="text-lg font-bold mb-5 flex items-center gap-2">
-               {type === 'emoji' ? <Smile className="text-orange-500"/> : <Zap className="text-yellow-500"/>}
+        <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 dark:border-gray-700 h-full hover:shadow-xl hover:border-blue-500/20 transition-all duration-300">
+            {/* Standardized Title Animation (No jumping) */}
+            <h3 className="text-lg font-bold mb-5 flex items-center gap-2 group cursor-default">
+               {type === 'emoji' 
+                 ? <Smile className="text-orange-500 transition-transform group-hover:rotate-12"/> 
+                 : <Zap className="text-yellow-500 transition-transform group-hover:rotate-12"/>}
                {title}
             </h3>
             
@@ -165,9 +187,9 @@ const VisibleDetailCard = ({ items, title, type }) => {
                     const winnerCount = topUser?.[1] || 0;
                     
                     return (
-                        <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+                        <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 relative overflow-hidden group hover:bg-white dark:hover:bg-gray-800 transition-colors">
                             {/* Left: Content */}
-                            <div className="h-10 w-10 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm text-2xl">
+                            <div className="h-10 w-10 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm text-2xl group-hover:scale-110 transition-transform">
                                 {type === 'emoji' ? item.char : item.text.slice(0,2)}
                             </div>
                             
@@ -201,11 +223,11 @@ const VisibleDetailCard = ({ items, title, type }) => {
 
 // 5. Leaderboard Row (Visible Summary)
 const LeaderboardRow = ({ stats }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 animate-enter delay-200">
         {stats.participantStats.sort((a,b) => b.messages - a.messages).map((p, idx) => (
-            <div key={p.name} className="bg-white dark:bg-gray-800/80 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
+            <div key={p.name} className="bg-white dark:bg-gray-800/80 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 hover:scale-105 transition-transform duration-200 hover:shadow-lg hover:border-blue-400/30 group cursor-default">
                 <div className="relative">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg text-white shadow-lg" style={{backgroundColor: COLORS[idx % COLORS.length]}}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg text-white shadow-lg group-hover:rotate-12 transition-transform" style={{backgroundColor: COLORS[idx % COLORS.length]}}>
                         {p.name.charAt(0)}
                     </div>
                     <div className="absolute -bottom-1 -right-1 bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded-full border-2 border-white dark:border-gray-800 font-bold">
@@ -215,8 +237,8 @@ const LeaderboardRow = ({ stats }) => (
                 <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-sm truncate">{p.name}</h4>
                     <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span className="flex items-center gap-1"><MessageCircle size={10}/> {p.messages.toLocaleString()}</span>
-                        <span className="flex items-center gap-1"><Zap size={10}/> {p.words.toLocaleString()}</span>
+                        <span className="flex items-center gap-1"><MessageCircle size={10}/> <CountUp end={p.messages}/></span>
+                        <span className="flex items-center gap-1"><Zap size={10}/> <CountUp end={p.words}/></span>
                     </div>
                 </div>
             </div>
@@ -273,26 +295,29 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#020617] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#020617] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 selection:bg-blue-500 selection:text-white">
       <style>{scrollStyles}</style>
 
       {/* HEADER */}
-      <nav className="sticky top-0 z-50 bg-white/90 dark:bg-[#020617]/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+      <nav className="sticky top-0 z-50 bg-white/90 dark:bg-[#020617]/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Logo area - Clickable with standard button animation */}
             <div className="flex items-center gap-3 cursor-pointer group w-full md:w-auto justify-between" onClick={resetApp}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform duration-200">
                     <div className="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-500/30"><Activity size={20} /></div>
                     <span className="font-bold text-lg tracking-tight">Chatalytics <span className="text-blue-500">Pro</span></span>
                 </div>
-                <button onClick={() => setDarkMode(!darkMode)} className="md:hidden p-2 bg-gray-100 dark:bg-gray-800 rounded-full">{darkMode ? <Sun size={18}/> : <Moon size={18}/>}</button>
+                {/* Mobile Dark Toggle */}
+                <button onClick={() => setDarkMode(!darkMode)} className="md:hidden p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:scale-105 active:scale-95 transition-transform">{darkMode ? <Sun size={18}/> : <Moon size={18}/>}</button>
             </div>
 
             {chatData && (
-                <div className="flex-1 w-full overflow-x-auto scrollbar-hide masking-gradient">
+                <div className="flex-1 w-full overflow-x-auto scrollbar-hide masking-gradient animate-enter">
                     <div className="flex gap-2 min-w-max px-2">
                         {chatData.participants.map((p, idx) => (
                             <button key={p} onClick={() => toggleParticipant(p)}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all border ${selectedParticipants.includes(p) ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent scale-105 shadow' : 'bg-transparent border-gray-300 dark:border-gray-700 text-gray-500'}`}
+                                // Added standard button animations (hover:scale-105, active:scale-95)
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 border ${selectedParticipants.includes(p) ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent shadow-md' : 'bg-transparent border-gray-300 dark:border-gray-700 text-gray-500 hover:border-gray-400'}`}
                             >
                                 <span className={`w-2 h-2 rounded-full ${selectedParticipants.includes(p) ? 'animate-pulse' : ''}`} style={{backgroundColor: COLORS[idx % COLORS.length]}}/>
                                 {p.split(' ')[0]}
@@ -302,19 +327,20 @@ export default function App() {
                 </div>
             )}
             
+            {/* Desktop Dark Toggle */}
             <div className="hidden md:flex items-center gap-2">
-                <button onClick={() => setDarkMode(!darkMode)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">{darkMode ? <Sun size={20}/> : <Moon size={20}/>}</button>
+                <button onClick={() => setDarkMode(!darkMode)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95 hover:rotate-12">{darkMode ? <Sun size={20}/> : <Moon size={20}/>}</button>
             </div>
         </div>
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {!chatData ? (
-          <div className="flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">
+          <div className="flex flex-col items-center justify-center min-h-[80vh] animate-enter">
              
              {/* HERO TITLE */}
              <div className="text-center space-y-4 max-w-2xl mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold uppercase tracking-wider mb-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold uppercase tracking-wider mb-2 animate-bounce">
                     <Shield size={12} /> Private & Secure
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-cyan-500 pb-2">
@@ -327,7 +353,7 @@ export default function App() {
 
              {/* HOW IT WORKS STEPS */}
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mb-12">
-                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 transition-colors">
+                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 hover:-translate-y-2 transition-all duration-300 animate-enter delay-100">
                     <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Smartphone size={24} />
                     </div>
@@ -335,7 +361,7 @@ export default function App() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">Open any chat (individual or group) and tap the contact name or three dots.</p>
                 </div>
 
-                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 transition-colors">
+                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 hover:-translate-y-2 transition-all duration-300 animate-enter delay-200">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <MoreVertical size={24} />
                     </div>
@@ -343,7 +369,7 @@ export default function App() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">Tap <b>More &gt; Export Chat &gt; Without Media</b>. Save the .zip or .txt file.</p>
                 </div>
 
-                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 transition-colors">
+                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center text-center group hover:border-blue-500/50 hover:-translate-y-2 transition-all duration-300 animate-enter delay-300">
                     <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <FileText size={24} />
                     </div>
@@ -353,9 +379,12 @@ export default function App() {
              </div>
 
              {/* UPLOAD BOX */}
-             <label className="group relative w-full max-w-lg h-40 border-4 border-dashed border-gray-300 dark:border-gray-700 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all bg-white dark:bg-gray-900/50">
-                <div className="flex flex-col items-center gap-3 group-hover:scale-105 transition-transform">
-                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300"><Upload size={24}/></div>
+             <label className="group relative w-full max-w-lg h-40 border-4 border-dashed border-gray-300 dark:border-gray-700 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 bg-white dark:bg-gray-900/50 overflow-hidden animate-enter delay-400">
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none animate-shimmer" />
+                
+                <div className="relative z-10 flex flex-col items-center gap-3 group-hover:scale-105 transition-transform duration-300">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 group-hover:bg-blue-500 group-hover:text-white transition-colors"><Upload size={24}/></div>
                     <span className="font-bold text-gray-700 dark:text-gray-200">Drop .txt or .zip file here</span>
                 </div>
                 <input type="file" accept=".txt,.zip" onChange={handleFileUpload} className="hidden" />
@@ -363,7 +392,7 @@ export default function App() {
 
           </div>
         ) : (
-          <div className="space-y-8 animate-fade-in pb-20">
+          <div className="space-y-8 pb-20">
             
             {/* 1. INFINITE WIDGET */}
             {stats && <InfiniteWidget awards={stats.awards} stats={stats} />}
@@ -375,7 +404,7 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* 3A. Left Column: Quick Stats */}
-                <div className="lg:col-span-1 grid grid-cols-2 gap-3 h-min">
+                <div className="lg:col-span-1 grid grid-cols-2 gap-3 h-min animate-enter delay-300">
                     {[
                         { l: 'Messages', v: stats.totalMessages, i: MessageCircle, c: 'text-blue-500' },
                         { l: 'Words', v: stats.participantStats.reduce((a,b)=>a+b.words,0), i: Zap, c: 'text-yellow-500' },
@@ -384,20 +413,32 @@ export default function App() {
                         { l: 'Links', v: stats.participantStats.reduce((a,b)=>a+b.links,0), i: LinkIcon, c: 'text-pink-500' },
                         { l: 'Deleted', v: stats.participantStats.reduce((a,b)=>a+b.deleted,0), i: Trash2, c: 'text-gray-500' },
                     ].map((s, idx) => (
-                        <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between">
-                            <div className={`${s.c} mb-2`}><s.i size={20}/></div>
-                            <div><h4 className="text-xl font-bold">{s.v.toLocaleString()}</h4><p className="text-[10px] uppercase font-bold text-gray-400">{s.l}</p></div>
+                        <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between hover:scale-105 transition-transform hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 group cursor-default">
+                            <div className={`${s.c} mb-2 group-hover:scale-110 transition-transform`}><s.i size={20}/></div>
+                            <div>
+                                <h4 className="text-xl font-bold">
+                                    <CountUp end={s.v} />
+                                </h4>
+                                <p className="text-[10px] uppercase font-bold text-gray-400">{s.l}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
 
                 {/* 3B. Center: Timeline & Heatmap */}
-                <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm animate-enter delay-400 hover:shadow-xl hover:border-blue-500/20 transition-all duration-300">
                     <div className="flex justify-between items-end mb-4">
-                        <h3 className="text-lg font-bold flex items-center gap-2"><Activity className="text-blue-500"/> Chat Velocity</h3>
+                        {/* Title - Consistent style */}
+                        <h3 className="text-lg font-bold flex items-center gap-2 group cursor-default">
+                            <Activity className="text-blue-500 transition-transform group-hover:rotate-12"/> 
+                            Chat Velocity
+                        </h3>
                         <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
                             {['all', 'year', 'month', 'week'].map(tf => (
-                                <button key={tf} onClick={() => setTimeFilter(tf)} className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md transition-all ${timeFilter === tf ? 'bg-white dark:bg-gray-600 shadow text-blue-500' : 'text-gray-500'}`}>{tf}</button>
+                                <button key={tf} onClick={() => setTimeFilter(tf)} 
+                                    className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md transition-all duration-200 hover:scale-105 active:scale-95 ${timeFilter === tf ? 'bg-white dark:bg-gray-600 shadow text-blue-500' : 'text-gray-500 hover:text-gray-700'}`}>
+                                    {tf}
+                                </button>
                             ))}
                         </div>
                     </div>
@@ -410,7 +451,7 @@ export default function App() {
                                 <Tooltip content={<CustomTooltip />} />
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.1} />
                                 <XAxis dataKey="date" hide />
-                                <Area type="monotone" dataKey={selectedParticipants[0]} stroke="#3b82f6" fill="url(#grad)" strokeWidth={2} />
+                                <Area type="monotone" dataKey={selectedParticipants[0]} stroke="#3b82f6" fill="url(#grad)" strokeWidth={2} animationDuration={2000} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -425,18 +466,22 @@ export default function App() {
             </div>
 
             {/* 4. VISIBLE DETAILS (Vocabulary & Emojis) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-enter delay-500">
                 
                 {/* Emojis Card */}
                 <VisibleDetailCard title="Top Emojis" items={stats.topEmojis} type="emoji" />
 
                 {/* Vocabulary Card with Slider */}
-                <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 dark:border-gray-700 h-full">
+                <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 dark:border-gray-700 h-full hover:shadow-xl hover:border-blue-500/20 transition-all duration-300">
                     <div className="flex justify-between items-center mb-5">
-                         <h3 className="text-lg font-bold flex items-center gap-2"><Zap className="text-yellow-500"/> Vocabulary</h3>
+                         {/* Title - Consistent style */}
+                         <h3 className="text-lg font-bold flex items-center gap-2 group cursor-default">
+                             <Zap className="text-yellow-500 transition-transform group-hover:rotate-12"/> 
+                             Vocabulary
+                         </h3>
                          <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
                             <span className="text-[10px] font-bold uppercase text-gray-500">Len: {wordLength}</span>
-                            <input type="range" min="3" max="10" value={wordLength} onChange={(e) => setWordLength(Number(e.target.value))} className="w-20 h-1 accent-blue-500"/>
+                            <input type="range" min="3" max="10" value={wordLength} onChange={(e) => setWordLength(Number(e.target.value))} className="w-20 h-1 accent-blue-500 cursor-pointer"/>
                         </div>
                     </div>
                     {/* Re-use visible card logic for words */}
@@ -444,8 +489,8 @@ export default function App() {
                         {stats.topWords.slice(0, 8).map((item, idx) => {
                              const topUser = Object.entries(item.breakdown).sort((a,b)=>b[1]-a[1])[0];
                              return (
-                                <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800">
-                                    <div className="h-10 w-10 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm text-xs font-bold">{item.text.slice(0,3)}..</div>
+                                <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 hover:bg-white dark:hover:bg-gray-800 transition-colors group">
+                                    <div className="h-10 w-10 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm text-xs font-bold group-hover:scale-110 transition-transform">{item.text.slice(0,3)}..</div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-baseline mb-1">
                                             <span className="font-bold truncate text-sm">{item.text}</span>
@@ -468,30 +513,38 @@ export default function App() {
             </div>
 
             {/* 5. DEEP INSIGHTS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-enter delay-500">
                 
                 {/* Instigator */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700">
-                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Crown className="text-orange-500"/> The Instigator</h3>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 hover:shadow-xl hover:border-blue-500/20 transition-all duration-300">
+                    {/* Title - Consistent style */}
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2 group cursor-default">
+                        <Crown className="text-orange-500 transition-transform group-hover:rotate-12"/> 
+                        The Instigator
+                    </h3>
                     <div className="h-[200px] relative">
                          <ResponsiveContainer>
                             <PieChart>
-                                <Pie data={Object.entries(stats.starters).map(([name, val]) => ({name, value: val}))} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                <Pie data={Object.entries(stats.starters).map(([name, val]) => ({name, value: val}))} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" animationDuration={1500}>
                                     {Object.entries(stats.starters).map((e, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                                 </Pie>
                                 <Tooltip content={<CustomTooltip />} />
                             </PieChart>
                          </ResponsiveContainer>
                          <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-                            <span className="text-3xl font-bold">{Object.entries(stats.starters).sort((a,b)=>b[1]-a[1])[0]?.[0].charAt(0)}</span>
+                            <span className="text-3xl font-bold animate-pop">{Object.entries(stats.starters).sort((a,b)=>b[1]-a[1])[0]?.[0].charAt(0)}</span>
                             <span className="text-[10px] uppercase opacity-50">Winner</span>
                          </div>
                     </div>
                 </div>
 
                 {/* Peak Hours (Fixed Opacity) */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 col-span-2">
-                    <h3 className="text-lg font-bold mb-2 flex items-center gap-2"><TrendingUp className="text-purple-500"/> Peak Activity Hours</h3>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 col-span-2 hover:shadow-xl hover:border-blue-500/20 transition-all duration-300">
+                    {/* Title - Consistent style */}
+                    <h3 className="text-lg font-bold mb-2 flex items-center gap-2 group cursor-default">
+                        <TrendingUp className="text-purple-500 transition-transform group-hover:rotate-12"/> 
+                        Peak Activity Hours
+                    </h3>
                     <div className="h-[200px]">
                         <ResponsiveContainer>
                             <ScatterChart margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
@@ -499,7 +552,7 @@ export default function App() {
                                 <YAxis type="number" dataKey="day" domain={[0, 6]} tickFormatter={t => DAYS[t]} tick={{fontSize: 10}} stroke="#888" width={30}/>
                                 <ZAxis type="number" dataKey="size" range={[20, 300]} /> 
                                 <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
-                                <Scatter data={stats.peakActivityMatrix.flatMap((d, day) => d.map((v, hour) => ({ day, hour, size: v, value: v, name: 'Msgs' }))).filter(x => x.size > 0)} fill="#8884d8">
+                                <Scatter data={stats.peakActivityMatrix.flatMap((d, day) => d.map((v, hour) => ({ day, hour, size: v, value: v, name: 'Msgs' }))).filter(x => x.size > 0)} fill="#8884d8" animationDuration={1500}>
                                     {stats.peakActivityMatrix.flat().map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.8} />)}
                                 </Scatter>
                             </ScatterChart>

@@ -13,8 +13,8 @@
 }
 
 .dark {
-  --background: #111827;
-  --surface: #1f2937;
+  --background: #0f172a; /* Slightly darker than before for contrast */
+  --surface: #1e293b;
   --primary: #34d399;
   --secondary: #60a5fa;
   --text: #f9fafb;
@@ -25,8 +25,61 @@
 body {
   background-color: var(--background);
   color: var(--text);
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.5s ease; /* Smoother theme switch */
 }
+
+/* --- ANIMATION KEYFRAMES --- */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  70% { transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.1); }
+  50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
+}
+
+/* --- UTILITY CLASSES --- */
+
+.animate-enter {
+  opacity: 0; /* Start hidden */
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pop {
+  animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Stagger Delays for Grid Items */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -47,7 +100,6 @@ body {
   background: #94a3b8;
 }
 
-/* Hide scrollbar utility */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
@@ -56,8 +108,6 @@ body {
     scrollbar-width: none;
 }
 
-@layer utilities {
-  .glass {
-    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/20 dark:border-gray-700/50;
-  }
+.masking-gradient {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
